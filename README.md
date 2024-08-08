@@ -44,3 +44,49 @@ remote_database.download_structure(material_id=2)
 Security:
  -have login page, anyone can register (for now)
 
+---
+Workflow and Logic
+```
++-------------------+
+|  User Interface   |
+| (Web Browser)     |
++---------+---------+
+          |
+          v
++---------+---------+
+|    Flask App      |
+| - Routes          |
+| - Logic           |
++---------+---------+
+          |
+          v
++---------+---------+
+|    Database       |
+| (SQLite)         |
++---------+---------+
+          |
+          v
++---------+---------+
+|  File Storage     |
+| (uploads folder)  |
++---------+---------+
+          |
+          v
++---------+---------+
+|    API Access     |
+| - Generate API Key|
+| - Retrieve Materials|
++---------+---------+
+          |
+          v
++---------+---------+
+| Nginx (Reverse    |
+| Proxy)            |
++---------+---------+
+          |
+          v
++---------+---------+
+| Gunicorn (WSGI    |
+| Server)           |
++-------------------+
+```
