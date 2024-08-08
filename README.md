@@ -1,2 +1,2 @@
 # batteries-db
-Database for material screen in solid electrolyte batteries research
+Database for material screening in solid electrolyte batteries research
