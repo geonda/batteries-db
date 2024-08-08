@@ -1,6 +1,8 @@
 # batteries-db
 Database for material screening in solid electrolyte batteries research
 
+----
+![](img/db.png)
 API:
 ```
 from apitest import interface
@@ -38,3 +40,8 @@ You can also directly download structure file:
 ```
 remote_database.download_structure(material_id=2)
 ```
+----
+
+Security:
+ -have login page, anyone can register (for now)
+
