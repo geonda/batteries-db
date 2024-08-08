@@ -1,5 +1,4 @@
-# batteries-db
-Database for material screening in solid electrolyte batteries research
+# Database for solid state batteries discovery
 
 ----
 ![](img/db.png)
