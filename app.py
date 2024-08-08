@@ -3,7 +3,7 @@ import logging
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, IntegerField, FileField, SubmitField
+from wtforms import StringField, TextAreaField, IntegerField, FileField, SubmitField, FloatField
 from wtforms.validators import DataRequired
 from flask import send_from_directory
 from flask import Flask, request, jsonify
@@ -36,8 +36,13 @@ api_keys = {
 class Material(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(255), nullable=True)
-    quantity = db.Column(db.Integer, nullable=False)
+    comments = db.Column(db.String(255), nullable=True)
+    reference = db.Column(db.String(255), nullable=True)
+    gap = db.Column(db.Float, nullable=True)
+    ionc = db.Column(db.Float, nullable=True)
+    tsw_up=db.Column(db.Float, nullable=True)
+    tsw_down=db.Column(db.Float, nullable=True)
+   
     filename = db.Column(db.String(100), nullable=True)  # To store the uploaded file name
 
     def __repr__(self):
@@ -94,8 +99,10 @@ class MaterialResource(Resource):
         return jsonify([{
             'id': material.id,
             'name': material.name,
-            'description': material.description,
-            'quantity': material.quantity,
+            'description': material.comments,
+            'reference': material.reference,
+            'gap': material.gap,
+            'ionc':material.ionc,
             'filename': material.filename
         } for material in materials])
     
@@ -105,7 +112,10 @@ class MaterialResource(Resource):
         data = request.form
         name = data.get('name')
         description = data.get('description')
-        quantity = data.get('quantity')
+        gap = data.get('gap')
+        ionc = data.get('ionc')
+        tsw_up = data.get('tsw_up')
+        tsw_down = data.get('tsw_down')
         file = request.files.get('file')
 
         # Save the file if it exists
@@ -114,11 +124,11 @@ class MaterialResource(Resource):
             filename = file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        new_material = Material(name=name, description=description, quantity=int(quantity), filename=filename)
+        new_material = Material(name=name, comments=description, gap=float(gap),ionc=float(ionc), tsw_up=float(tsw_up),tsw_down=float(tsw_down), filename=filename)
         db.session.add(new_material)
         db.session.commit()
 
-        logging.info(f'Added material: {new_material.name}, Quantity: {new_material.quantity}, File: {filename}')
+        logging.info(f'Added material: {new_material.name}, Description: {new_material.comments}, File: {filename}')
         # print(jsonify({'message': 'Material added successfully', 'id': new_material.id}))
         return {'message': 'Material added successfully', 'id': new_material.id}, 201
 
@@ -141,7 +151,11 @@ class ApiKeyResource(Resource):
 class MaterialForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description')
-    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    reference = TextAreaField('Reference')
+    gap = FloatField('Gap')
+    ionc = FloatField('Ionic conductivity')
+    tsw_up= FloatField('TSW upper limit')
+    tsw_down= FloatField('TSW lower limit')
     file = FileField('Upload File')
     submit = SubmitField('Add Material')
 
@@ -196,7 +210,11 @@ def add_material():
     if form.validate_on_submit():
         name = form.name.data
         description = form.description.data
-        quantity = form.quantity.data
+        reference = form.reference.data
+        gap=form.gap.data
+        ionc=form.ionc.data
+        tsw_down=form.tsw_down.data
+        tsw_up=form.tsw_up.data
         file = form.file.data
 
         # Save the file if it exists
@@ -205,12 +223,12 @@ def add_material():
             filename = file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        new_material = Material(name=name, description=description, quantity=quantity, filename=filename)
+        new_material = Material(name=name, comments=description, reference=reference, gap=gap,ionc=ionc,tsw_down=tsw_down,tsw_up=tsw_up, filename=filename)
         db.session.add(new_material)
         db.session.commit()
 
         # Log the action
-        logging.info(f'Added material: {new_material.name}, Quantity: {new_material.quantity}, File: {filename}')
+        logging.info(f'Added material: {new_material.name}, Quantity: {new_material.reference}, File: {filename}')
         return redirect(url_for('index'))
 
     return render_template('add_material.html', form=form)
@@ -230,19 +248,24 @@ def edit_material(material_id):
     form = MaterialForm(obj=material)
     if form.validate_on_submit():
         material.name = form.name.data
-        material.description = form.description.data
-        material.quantity = form.quantity.data
-        file = form.file.data
+        material.comments = form.description.data
+        material.reference = form.reference.data
+        material.gap=form.gap.data
+        material.ionc=form.ionc.data
+        material.tsw_down=form.tsw_down.data
+        material.tsw_up=form.tsw_up.data
+        material.file = form.file.data
 
-        # Save the file if it exists
-        if file:
-            material.filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], material.filename))
+
+        # # Save the file if it exists
+        # if file:
+        #     material.filename = file.filename
+        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], material.filename))
 
         db.session.commit()
 
         # Log the action
-        logging.info(f'Updated material: {material.name}, Quantity: {material.quantity}, File: {material.filename}')
+        logging.info(f'Updated material: {material.name}, Comments: {material.comments}, File: {material.filename}')
         return redirect(url_for('index'))
 
     return render_template('edit_material.html', form=form, material=material)

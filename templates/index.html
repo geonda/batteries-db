@@ -38,7 +38,11 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Gap, eV</th>
+                    <th>Reference</th>
+                    <th>Gap, eV </th>
+                    <th>IC, S/m </th>
+                    <th>TSW >, eV</th>
+                    <th>TSW <, eV</th>
                     <th>Structure file</th>
                     <th>Actions</th>
                 </tr>
@@ -48,8 +52,12 @@
                 <tr>
                     <td>{{ material.id }}</td>
                     <td>{{ material.name }}</td>
-                    <td>{{ material.description }}</td>
-                    <td>{{ material.quantity }}</td>
+                    <td>{{ material.comments }}</td>
+                    <td>{{ material.reference }}</td>
+                    <td>{{ material.gap }}</td>
+                    <td>{{ material.ionc}}</td>
+                    <td>{{ material.tsw_up }}</td>
+                    <td>{{ material.tsw_down }}</td>
                     <td>
                         {% if material.filename %}
                             <a href="{{ url_for('uploads', filename=material.filename) }}">{{ material.filename }}</a>
@@ -58,8 +66,8 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="/edit/{{ material.id }}" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="/delete/{{ material.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                        <a href="/edit/{{ material.id }}" class="btn btn-warning btn-sm ">Edit </a>
+                        <a href="/delete/{{ material.id }}" class="btn btn-danger btn-sm " onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -20,11 +20,11 @@ class interface:
             materials = response.json()
             print("Materials retrieved successfully:")
             for material in materials:
-                print(f"ID: {material['id']}, Name: {material['name']}, Quantity: {material['quantity']}")
+                print(f"ID: {material['id']}, Name: {material['name']}, Gap: {material['gap']}")
         else:
             print(f"Error retrieving materials: {response.json().get('error')}")
 
-    def add_material(self, data=dict(name='test', description='test', quantity=1, filename=None)):
+    def add_material(self, data=dict(name='test', description='test', gap=1, filename=None)):
         """Add a new material to the database using the API key."""
 
         files = {}
@@ -37,6 +37,7 @@ class interface:
             print(f"Material added successfully: {response.json()}")
         else:
             print(f"Error adding material: {response.json().get('error')}")
+
     def download_structure(self,material_id=1):
         response = requests.get(f"{self.API_URL}/api/download/{material_id}", headers=self.headers)
         if response.status_code == 200:
